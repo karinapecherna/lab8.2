@@ -1,38 +1,42 @@
 #include "pch.h" 
 #include "CppUnitTest.h"
 #include <string>
+#include <fstream>
 #include "../lab8.2/FileName.cpp"
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
-namespace WordFinderTests
+// Declaration of ProcessTXT1 to test
+int ProcessTXT1(char* fname);
+
+namespace UnitTest1
 {
-    TEST_CLASS(WordFinderTests)
-    {
-    public:
-        TEST_METHOD(TestFindFirstWordWithA_Iterative)
-        {
-           
-            struct TestCase {
-                std::string input;
-                std::string expected;
-            };
+	TEST_CLASS(UnitTest1)
+	{
+	public:
 
-            TestCase testCases[] = {
-                { "apple banana apricot", "apple" },
-                { "banana apple apricot", "apple" },
-                { "hello world", "" },
-                { "grape orange", "" },
-                { "a big apple is here", "a" },
-                { "", "" },
-                { " a", "a" }
-            };
+		TEST_METHOD(TestProcessTXT1_CountsPlusMinusEqualSignsCorrectly)
+		{
+			// Create a temporary test file
+			const char* testFileName = "testfile.txt";
+			std::ofstream testFile(testFileName);
 
-            for (const auto& testCase : testCases) {
-                std::string result = FindFirstWordWithA_Iterative(testCase.input);
-                Assert::AreEqual(testCase.expected, result);
-            }
-        }
-    };
+			// Write known content with +, -, and = signs
+			testFile << "This + is a test - file = with some + signs - and = symbols.\n";
+			testFile << "Extra line with + and - and =.\n";
+			testFile.close();
+
+			// Expected count of +, -, and = combined
+			int expectedCount = 7;
+
+			// Call the function under test
+			int actualCount = ProcessTXT1((char*)testFileName);
+
+			// Verify the result
+			Assert::AreEqual(expectedCount, actualCount);
+
+			// Clean up test file
+			remove(testFileName);
+		}
+	};
 }
-
